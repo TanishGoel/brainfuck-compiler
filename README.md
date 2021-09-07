@@ -4,4 +4,4 @@
 <code>cargo build</code>
 
 ## to run
-<code>cargo run <filename>.bf</code>
+<code>cargo run filename.bf</code>
