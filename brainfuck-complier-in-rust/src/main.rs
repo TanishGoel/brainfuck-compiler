@@ -76,12 +76,12 @@ fn parse (opcodes : Vec<OpCode>) -> Vec<Instruction> {
             };
 
             match instr {
-                some(instr) => program.push(instr),
+                Some(instr) => program.push(instr),
                 None => ()
             }
         } else {
             match op {
-                OpCode::Loopbegin => {
+                OpCode::LoopBegin => {
                     loop_stack += 1;
                 },
                 OpCode::LoopEnd => {
@@ -115,10 +115,11 @@ fn run(instructions: &Vec<Instruction>, tape: &mut Vec<u8>, data_ptr: &mut usize
                 let mut input: [u8; 1] = [0; 1];
                 std::io::stdin().read_exact(&mut input).expect("failed to read stdin");
                 tape[*data_ptr] = input[0];
-        },
-        Instruction::Loop(nested_instructions) => {
-            while tape[*data_ptr] != 0 {
-                run(&nested_instructions, tape, data_ptr)
+            },
+            Instruction::Loop(nested_instructions) => {
+                while tape[*data_ptr] != 0 {
+                    run(&nested_instructions, tape, data_ptr)
+                }
             }
         }
     }
@@ -132,7 +133,7 @@ fn main() {
         std::process::exit(1);
     }
 
-    let filename = &args[1];
+    let filename = &arguments[1];
 
     let mut file = File::open(filename).expect("file not found");
     let mut src = String::new();
@@ -143,5 +144,5 @@ fn main() {
 
     let mut tape: Vec<u8> = vec![0; 1024];
     let mut data_ptr = 512;
-    run(&program, &mut tape, &mut data_ptr);
+    run(&prog, &mut tape, &mut data_ptr);
 }
