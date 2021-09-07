@@ -1,0 +1,8 @@
+cargo:rerun-if-env-changed=LLVM_SYS_100_PREFIX
+cargo:rerun-if-env-changed=LLVM_SYS_100_IGNORE_BLACKLIST
+cargo:rerun-if-env-changed=LLVM_SYS_100_STRICT_VERSIONING
+cargo:rerun-if-env-changed=LLVM_SYS_100_NO_CLEAN_CFLAGS
+cargo:rerun-if-env-changed=LLVM_SYS_100_USE_DEBUG_MSVCRT
+cargo:rerun-if-env-changed=LLVM_SYS_100_FFI_WORKAROUND
+Didn't find usable system-wide LLVM.
+cargo:rustc-cfg=LLVM_SYS_NOT_FOUND
