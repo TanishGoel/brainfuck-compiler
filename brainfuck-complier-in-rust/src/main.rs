@@ -5,8 +5,8 @@ use std::fs::File;
 #[derive(Debug)]
 #[derive(Clone)]
 enum OpCode {
-    IncrementPointer,
-    DecrementPointer,
+    IncrementPtr,
+    DecrementPtr,
     Increment,
     Decrement,
     Read,
@@ -18,8 +18,8 @@ enum OpCode {
 #[derive(Debug)]
 #[derive(Clone)]
 enum Instruction {
-    IncrementPointer,
-    DecrementPointer,
+    IncrementPtr,
+    DecrementPtr,
     Increment,
     Decrement,
     Write,
@@ -32,8 +32,8 @@ fn lex(src: String) -> Vec<OpCode> {
 
     for symbol in src.chars() {
         let op = match symbol {
-            '>' => Some(OpCode::IncrementPointer),
-            '<' => Some(OpCode::DecrementPointer),
+            '>' => Some(OpCode::IncrementPtr),
+            '<' => Some(OpCode::DecrementPtr),
             '+' => Some(OpCode::Increment),
             '-' => Some(OpCode::Decrement),
             '.' => Some(OpCode::Write),
@@ -59,8 +59,8 @@ fn parse (opcodes : Vec<OpCode>) -> Vec<Instruction> {
     for (i, op) in opcodes.iter().enumerate() {
         if loop_stack == 0 {
             let instr = match op {
-                OpCode::IncrementPointer => Some(Instruction::IncrementPointer),
-                OpCode::DecrementPointer => Some(Instruction::DecrementPointer),
+                OpCode::IncrementPtr => Some(Instruction::IncrementPtr),
+                OpCode::DecrementPtr => Some(Instruction::DecrementPtr),
                 OpCode::Increment => Some(Instruction::Increment),
                 OpCode::Decrement => Some(Instruction::Decrement),
                 OpCode::Write => Some(Instruction::Write),
@@ -103,22 +103,24 @@ fn parse (opcodes : Vec<OpCode>) -> Vec<Instruction> {
     program
 }
 
-fn run(instructions: &Vec<Instruction>, tape: &mut Vec<u8>, data_ptr: &mut usize) {
+fn run(instructions: &Vec<Instruction>, overhead: &mut Vec<u8>, data_ptr: &mut usize) {
     for instr in instructions {
         match instr {
-            Instruction::IncrementPointer => *data_ptr += 1,
-            Instruction::DecrementPointer => *data_ptr -= 1,
-            Instruction::Increment => tape[*data_ptr] += 1,
-            Instruction::Decrement => tape[*data_ptr] -= 1,
-            Instruction::Write => print!("{}", tape[*data_ptr] as char),
+            Instruction::IncrementPtr => *data_ptr += 1,
+            Instruction::DecrementPtr => *data_ptr -= 1,
+            Instruction::Increment => overhead[*data_ptr] += 1,
+            Instruction::Decrement => overhead[*data_ptr] -= 1,
+            Instruction::Write => print!("{}", overhead[*data_ptr] as char),
+            
             Instruction::Read => {
                 let mut input: [u8; 1] = [0; 1];
                 std::io::stdin().read_exact(&mut input).expect("failed to read stdin");
-                tape[*data_ptr] = input[0];
+                overhead[*data_ptr] = input[0];
             },
+            
             Instruction::Loop(nested_instructions) => {
-                while tape[*data_ptr] != 0 {
-                    run(&nested_instructions, tape, data_ptr)
+                while overhead[*data_ptr] != 0 {
+                    run(&nested_instructions, overhead, data_ptr)
                 }
             }
         }
@@ -142,7 +144,8 @@ fn main() {
     let op = lex(src);
     let prog = parse(op);
 
-    let mut tape: Vec<u8> = vec![0; 1024];
+    let mut overhead: Vec<u8> = vec![0; 1024];
     let mut data_ptr = 512;
-    run(&prog, &mut tape, &mut data_ptr);
+
+    run(&prog, &mut overhead, &mut data_ptr);
 }
