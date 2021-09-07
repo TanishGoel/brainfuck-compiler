@@ -4,6 +4,28 @@ use std::fs::File;
 
 #[derive(Debug)]
 #[derive(Clone)]
+enum OpCode {
+    IncrementPointer,
+    DecrementPointer,
+    Increment,
+    Decrement,
+    Read,
+    Write,
+    LoopBegin,
+    LoopEnd,
+}
+
+#[derive(Debug)]
+#[derive(Clone)]
+enum Instruction {
+    IncrementPointer,
+    DecrementPointer,
+    Increment,
+    Decrement,
+    Write,
+    Read,
+    Loop(Vec<Instruction>)
+}
 
 fn main() {
     let arguments: Vec<String> = env::args().collect();
